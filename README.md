@@ -14,4 +14,4 @@ Usage: backup-spider.sh -s <source>
 ~~~~
 Back-up script based on [`rsync`](https://linux.die.net/man/1/rsync). The script backs up a given directory (argument `-s`) to the corresponding directory under `~/SpiderOak Hive/`.
 
-#### A
+#### More to be added
