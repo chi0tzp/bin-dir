@@ -63,147 +63,93 @@ fi
 ################################################################################
 if [ "${HOSTNAME}" == "riemann" ]
 then
-    # -- Source directories --
+    # Define root directory
     ROOT_DIR=${HOME}"/"
-    BIN_SRC="bin/"
-    LAB_SRC="LAB/"
-    DROPBOX_SRC="Dropbox/"
-    SPIDEROAK_SRC='SpiderOak Hive/'
-    ICEDOVE_SRC=".icedove/"
 
-    # -- Ask for confirmation --
+    # Define directories (under `ROOT_DIR`) to be backed-up
+    DIRS=( "bin/"
+            "LAB/"
+            "Dropbox/"
+            #"SpiderOak Hive/"
+            ".icedove/"
+            ".ssh"
+            ".bashrc"
+            ".emacs"
+            ".gitconfig"
+            ".pdbrc"
+            ".tmux.conf"
+            ".xbindkeysrc" )
+
+    # Ask for confirmation
     echo "Hostname:" ${HOSTNAME}
     echo ">> Gonna backup the following dirs to:" ${DEST_DIR}
-    echo "   -- " ${BIN_SRC}
-    echo "   -- " ${LAB_SRC}
-    echo "   -- " ${SPIDEROAK_SRC}
-    echo "   -- " ${ICEDOVE_SRC}
+    for i in "${DIRS[@]}"
+    do
+	    echo "   -- " ${i}
+    done
 
     while true; do
         read -p ">> Continue (y/n)?" yn
-        case $yn in
+        case ${yn} in
             [Yy]* ) break;;
             [Nn]* ) echo ">> OK. Goodbye!";exit;;
             * ) echo "## Please answer (y)es or (n)o...";;
         esac
     done
 
-    # -- Back Up DIRs --
+    # Start back-up procedure
     echo ">> Backing up..."
 
+    # Create destination directory (if it doesn't exist)
     mkdir -p ${DEST_DIR}${HOSTNAME}
 
-    # -- Get start time --
+    # Get start time
     date=$(date +'%Y-%m-%d %H:%M:%S')
     read Y M D h m s <<< ${date//[-: ]/ };
     start_time="$Y-$M-$D @ $h:$m:$s"
 
-    # -- BIN_SRC --
-    echo -n "   -- " ${BIN_SRC}...
-    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}${BIN_SRC} ${DEST_DIR}${BIN_SRC} && echo "done!"
+    # Back-up
+    for i in "${DIRS[@]}"
+    do
+	    echo -n "   -- " ${i}" ..."
+	    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}${i} ${DEST_DIR}${i} && echo "Done!"
+    done
 
-    # -- LAB_SRC --
-    echo -n "   -- " ${LAB_SRC}...
-    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}${LAB_SRC} ${DEST_DIR}${LAB_SRC} && echo "done!"
-
-    # -- DROPBOX_SRC --
-    echo -n "   -- " ${DROPBOX_SRC}...
-    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}${DROPBOX_SRC} ${DEST_DIR}${DROPBOX_SRC} && echo "done!"
-
-    # -- SPIDEROAK_SRC --
-    echo -n "   -- " ${SPIDEROAK_SRC}...
-    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}"${SPIDEROAK_SRC}" ${DEST_DIR}"${SPIDEROAK_SRC}" && echo "done!"
-
-    # -- ICEDOVE_SRC --
-    echo -n "   -- " ${ICEDOVE_SRC}...
-    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}"${ICEDOVE_SRC}" ${DEST_DIR}"${ICEDOVE_SRC}" && echo "done!"
-
-    # -- Get end time --
-    date=$(date +'%Y-%m-%d %H:%M:%S')
-    read Y M D h m s <<< ${date//[-: ]/ };
-    end_time="$Y-$M-$D @ $h:$m:$s"
-
-    # -- Append to a log file --
-    echo ""
-    echo ">> Backup complete!"
-    echo "   -------------------------------"
-    echo "   Started @ "${start_time}
-    echo "   Ended   @ "${end_time}
-    echo "   -------------------------------"
-
-    LOG_DIR=".log/"
-    mkdir -p ${DEST_DIR}${LOG_DIR}
-    LOG_FILE=${DEST_DIR}${LOG_DIR}"riemann_backup.log"
-    echo "* BACKUP RIEMANN" >> ${LOG_FILE}
-    echo "  --------------------------------"  >> ${LOG_FILE}
-    echo "  Started @ "${start_time}           >> ${LOG_FILE}
-    echo "  Ended   @ "${end_time}             >> ${LOG_FILE}
-    echo "  --------------------------------"  >> ${LOG_FILE}
 
 ################################################################################
 ##                                  HILBERT                                   ##
 ################################################################################
 elif [ "${HOSTNAME}" == "hilbert" ]
 then
-    # -- Source directories --
-    ROOT_DIR=${HOME}"/"
-    LAB_SRC="LAB/"
-
-    # -- Ask for confirmation --
-    echo "Hostname:" ${HOSTNAME}
-    echo ">> Gonna backup the following dirs to:" ${DEST_DIR}
-    echo "   -- " ${LAB_SRC}
-
-    while true; do
-        read -p ">> Continue (y/n)?" yn
-        case $yn in
-            [Yy]* ) break;;
-            [Nn]* ) echo ">> OK. Goodbye!";exit;;
-            * ) echo "## Please answer (y)es or (n)o...";;
-        esac
-    done
-
-    # -- Back Up DIRs --
-    echo ">> Backing up..."
-
-    mkdir -p ${DEST_DIR}${HOSTNAME}
-
-    # -- Get start time --
-    date=$(date +'%Y-%m-%d %H:%M:%S')
-    read Y M D h m s <<< ${date//[-: ]/ };
-    start_time="$Y-$M-$D @ $h:$m:$s"
-
-    # -- LAB_SRC --
-    echo -n "   -- " ${LAB_SRC}...
-    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}${LAB_SRC} ${DEST_DIR}${LAB_SRC} && echo "done!"
-
-    # -- Get end time --
-    date=$(date +'%Y-%m-%d %H:%M:%S')
-    read Y M D h m s <<< ${date//[-: ]/ };
-    end_time="$Y-$M-$D @ $h:$m:$s"
-
-    # -- Append to a log file --
-    echo ""
-    echo ">> Backup complete!"
-    echo "   -------------------------------"
-    echo "   Started @ "${start_time}
-    echo "   Ended   @ "${end_time}
-    echo "   -------------------------------"
-
-    LOG_DIR=".log/"
-    mkdir -p ${DEST_DIR}${LOG_DIR}
-    LOG_FILE=${DEST_DIR}${LOG_DIR}"riemann_backup.log"
-    echo "* BACKUP RIEMANN" >> ${LOG_FILE}
-    echo "  --------------------------------"  >> ${LOG_FILE}
-    echo "  Started @ "${start_time}           >> ${LOG_FILE}
-    echo "  Ended   @ "${end_time}             >> ${LOG_FILE}
-    echo "  --------------------------------"  >> ${LOG_FILE}
+    echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
+    exit;
 
 ################################################################################
 ##                              UNKNOWN HOSTNAME                              ##
 ################################################################################
 else
-    echo " ## Error: Unknown hostname: ${HOSTNAME}"
-    echo "    -- Goodbye!";
+    echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 fi
+
+
+# Get end time
+date=$(date +'%Y-%m-%d %H:%M:%S')
+read Y M D h m s <<< ${date//[-: ]/ };
+end_time="$Y-$M-$D @ $h:$m:$s"
+
+echo ">> Backup complete!"
+echo "   -------------------------------"
+echo "   Started @ "${start_time}
+echo "   Ended   @ "${end_time}
+echo "   -------------------------------"
+
+# Append to a log file under `LOG_DIR`
+LOG_DIR=".log/"
+mkdir -p ${DEST_DIR}${LOG_DIR}
+LOG_FILE=${DEST_DIR}${LOG_DIR}${HOSTNAME}"_backup.log"
+echo "* BACKUP ${HOSTNAME}" >> ${LOG_FILE}
+echo "  --------------------------------"  >> ${LOG_FILE}
+echo "  Started @ "${start_time}           >> ${LOG_FILE}
+echo "  Ended   @ "${end_time}             >> ${LOG_FILE}
+echo "  --------------------------------"  >> ${LOG_FILE}
