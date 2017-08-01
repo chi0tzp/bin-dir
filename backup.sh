@@ -33,6 +33,10 @@ rsync_opt="-azq --delete-after"
 # -- List of months --
 MONTHS=(null Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
 
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
+
 ################################################################################
 ##                               GET DESTINATION                              ##
 ################################################################################
@@ -53,14 +57,13 @@ shift $((OPTIND - 1))
 # -- Check if the destination option (-d) is given --
 if [[ -z "${DEST_DIR}" ]]
 then
-    echo "Destination option (-d) missing. Abort!"
+    echo "${red}Destination option (-d) missing. Abort!${reset}"
     exit;
 fi
 
 
-################################################################################
-##                                  RIEMANN                                   ##
-################################################################################
+# RIEMANN
+# -------
 if [ "${HOSTNAME}" == "riemann" ]
 then
     # Define root directory
@@ -80,58 +83,55 @@ then
             ".tmux.conf"
             ".xbindkeysrc" )
 
-    # Ask for confirmation
-    echo "Hostname:" ${HOSTNAME}
-    echo ">> Gonna backup the following dirs to:" ${DEST_DIR}
-    for i in "${DIRS[@]}"
-    do
-	    echo "   -- " ${i}
-    done
-
-    while true; do
-        read -p ">> Continue (y/n)?" yn
-        case ${yn} in
-            [Yy]* ) break;;
-            [Nn]* ) echo ">> OK. Goodbye!";exit;;
-            * ) echo "## Please answer (y)es or (n)o...";;
-        esac
-    done
-
-    # Start back-up procedure
-    echo ">> Backing up..."
-
-    # Create destination directory (if it doesn't exist)
-    mkdir -p ${DEST_DIR}${HOSTNAME}
-
-    # Get start time
-    date=$(date +'%Y-%m-%d %H:%M:%S')
-    read Y M D h m s <<< ${date//[-: ]/ };
-    start_time="$Y-$M-$D @ $h:$m:$s"
-
-    # Back-up
-    for i in "${DIRS[@]}"
-    do
-	    echo -n "   -- " ${i}" ..."
-	    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
-    done
-
-
-################################################################################
-##                                  HILBERT                                   ##
-################################################################################
+# HILBERT
+# -------
 elif [ "${HOSTNAME}" == "hilbert" ]
 then
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 
-################################################################################
-##                              UNKNOWN HOSTNAME                              ##
-################################################################################
+# UNKNOWN HOSTNAME
+# ----------------
 else
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 fi
 
+# Ask for confirmation
+echo "Hostname:${red}" ${HOSTNAME} "${reset}"
+echo ">> Gonna backup the following dirs to ${DEST_DIR}:"
+echo -n ${red}
+for item in "${DIRS[@]}"; do
+    printf "\t%-8s\n" "${item}"
+done | column
+echo -n ${reset}
+
+while true; do
+    read -p ">> Continue (y/n)?" yn
+    case ${yn} in
+        [Yy]* ) break;;
+        [Nn]* ) echo ">> OK. Goodbye!";exit;;
+            * ) echo "## Please answer (y)es or (n)o...";;
+    esac
+done
+
+# Start back-up procedure
+echo ">> Backing up..."
+
+# Create destination directory (if it doesn't exist)
+mkdir -p ${DEST_DIR}${HOSTNAME}
+
+# Get start time
+date=$(date +'%Y-%m-%d %H:%M:%S')
+read Y M D h m s <<< ${date//[-: ]/ };
+start_time="$Y-$M-$D @ $h:$m:$s"
+
+# Back-up
+for i in "${DIRS[@]}"
+do
+    echo -n "   -- " ${i}" ..."
+    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+done
 
 # Get end time
 date=$(date +'%Y-%m-%d %H:%M:%S')
