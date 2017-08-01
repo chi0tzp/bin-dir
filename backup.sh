@@ -75,7 +75,7 @@ then
             "Dropbox/"
             "SpiderOak Hive/"
             ".icedove/"
-            ".ssh"
+            ".ssh/"
             ".bashrc"
             ".emacs"
             ".gitconfig"
@@ -97,7 +97,7 @@ else
     exit;
 fi
 
-# Ask for confirmation
+#
 echo "Hostname:${red}" ${HOSTNAME} "${reset}"
 echo ">> Gonna backup the following dirs to ${DEST_DIR}:"
 echo -n ${red}
@@ -106,6 +106,7 @@ for item in "${DIRS[@]}"; do
 done | column
 echo -n ${reset}
 
+# Ask for confirmation
 while true; do
     read -p ">> Continue (y/n)?" yn
     case ${yn} in
@@ -119,7 +120,7 @@ done
 echo ">> Backing up..."
 
 # Create destination directory (if it doesn't exist)
-# This doesn't work when destination is a remote machine
+# DBG: This doesn't work when destination is a remote machine; this should be implemented
 # mkdir -p ${DEST_DIR}${HOSTNAME}
 
 # Get start time
