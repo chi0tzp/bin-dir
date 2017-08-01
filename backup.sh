@@ -70,7 +70,7 @@ then
     DIRS=( "bin/"
             "LAB/"
             "Dropbox/"
-            #"SpiderOak Hive/"
+            "SpiderOak Hive/"
             ".icedove/"
             ".ssh"
             ".bashrc"
@@ -112,7 +112,7 @@ then
     for i in "${DIRS[@]}"
     do
 	    echo -n "   -- " ${i}" ..."
-	    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}${i} ${DEST_DIR}${i} && echo "Done!"
+	    ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
     done
 
 
