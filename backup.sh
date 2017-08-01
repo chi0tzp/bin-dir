@@ -102,7 +102,7 @@ echo "Hostname:${red}" ${HOSTNAME} "${reset}"
 echo ">> Gonna backup the following dirs to ${DEST_DIR}:"
 echo -n ${red}
 for item in "${DIRS[@]}"; do
-    printf "\t%-8s\n" "${item}"
+    printf "   %-8s\n" "${item}"
 done | column
 echo -n ${reset}
 
@@ -119,7 +119,8 @@ done
 echo ">> Backing up..."
 
 # Create destination directory (if it doesn't exist)
-mkdir -p ${DEST_DIR}${HOSTNAME}
+# This doesn't work when destination is a remote machine
+# mkdir -p ${DEST_DIR}${HOSTNAME}
 
 # Get start time
 date=$(date +'%Y-%m-%d %H:%M:%S')
@@ -129,7 +130,7 @@ start_time="$Y-$M-$D @ $h:$m:$s"
 # Back-up
 for i in "${DIRS[@]}"
 do
-    echo -n "   -- " ${i}" ..."
+    echo -n "   --" ${i}" ..."
     ${rsync_cmd} ${rsync_opt} ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
 done
 
