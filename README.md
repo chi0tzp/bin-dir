@@ -4,7 +4,7 @@ My ~/bin directory: a collection of auxiliary scripts for various tasks.
 
 #### backup.sh
 ~~~~
-Usage: backup.sh -d <destination>
+Usage: backup.sh -d <destination> [-r <remote>]
 ~~~~
 Back-up script based on [`rsync`](https://linux.die.net/man/1/rsync). The script backs up certain directories (given in the `DIRS` array) for each of a set of specified machines (disciminated by their `$HOSTNAME` -- see the `if...elif` statement). 
 
@@ -26,6 +26,8 @@ then
 ~~~~
 
 Destination (argument `-d`) can be a local (e.g., a usb hard disk drive), or a remote directory. For example,
+Optionally, if the destination directory is on a remote machine, ...
+
 ~~~~
 backup.sh -d /path/to/backup/dir
 backup.sh -d <user>@<ip>:/path/to/backup/dir
