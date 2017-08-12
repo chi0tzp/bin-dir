@@ -138,7 +138,7 @@ done
 echo ">> Backing up..."
 
 # Create destination directory (if it doesn't exist)
-# DBG: This doesn't work when destination is a remote machine; this should be implemented
+# TODO: This doesn't work when destination is a remote machine; this should be implemented
 # mkdir -p ${DEST_DIR}${HOSTNAME}
 
 # Get start time
@@ -164,10 +164,8 @@ echo "   Started @ "${start_time}
 echo "   Ended   @ "${end_time}
 echo "   -------------------------------"
 
-# Append to a log file under `LOG_DIR`
-LOG_DIR=".log/"
-mkdir -p ${DEST_DIR}${LOG_DIR}
-LOG_FILE=${DEST_DIR}${LOG_DIR}${HOSTNAME}"_backup.log"
+# Append to a log file under `${DEST_DIR}${HOSTNAME}`
+LOG_FILE=${DEST_DIR}"backup.log"
 echo "* BACKUP ${HOSTNAME}" >> ${LOG_FILE}
 echo "  --------------------------------"  >> ${LOG_FILE}
 echo "  Started @ "${start_time}           >> ${LOG_FILE}
