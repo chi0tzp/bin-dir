@@ -37,28 +37,30 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-################################################################################
-##                               GET DESTINATION                              ##
-################################################################################
-DEST_DIR=""
-while getopts d: opt; do
-  case $opt in
-  d)
-      if [ "${OPTARG: -1}" != "/" ]
-      then
-        OPTARG=${OPTARG}"/"
-      fi
-      DEST_DIR="${OPTARG}${HOSTNAME}/"
-      ;;
-  esac
-done
-shift $((OPTIND - 1))
+usage() { echo "Usage: $0 -d <dest_dir> [-r <remote>]" 1>&2; exit 1; }
 
-# -- Check if the destination option (-d) is given --
-if [[ -z "${DEST_DIR}" ]]
-then
-    echo "${red}Destination option (-d) missing. Abort!${reset}"
-    exit;
+# Parse command line arguments
+while getopts ":d:r:" o; do
+    case "${o}" in
+        d)
+            if [ "${OPTARG: -1}" != "/" ]
+            then
+                OPTARG=${OPTARG}"/"
+            fi
+            DEST_DIR="${OPTARG}${HOSTNAME}/"
+            ;;
+        r)
+            REMOTE=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z "${DEST_DIR}" ]; then
+    usage
 fi
 
 
@@ -85,18 +87,19 @@ then
     ROOT_DIR=${HOME}"/"
 
     # Define directories (under `ROOT_DIR`) to be backed-up
-    DIRS=( "bin/"
-            "LAB/"
-            "Dropbox/"
-            "SpiderOak Hive/"
-            ".icedove/"
-            ".ssh/"
-            ".bashrc"
-            ".emacs"
-            ".gitconfig"
-            ".pdbrc"
-            ".tmux.conf"
-            ".xbindkeysrc" )
+    DIRS=( ".tmux.conf" )
+#    DIRS=( "bin/"
+#            "LAB/"
+#            "Dropbox/"
+#            "SpiderOak Hive/"
+#            ".icedove/"
+#            ".ssh/"
+#            ".bashrc"
+#            ".emacs"
+#            ".gitconfig"
+#            ".pdbrc"
+#            ".tmux.conf"
+#            ".xbindkeysrc" )
 
 # HILBERT
 elif [ "${HOSTNAME}" == "hilbert" ]
@@ -110,9 +113,11 @@ else
     exit;
 fi
 
-#
 echo -e "Hostname:${red} \e[4m${HOSTNAME}\e[24m ${reset}"
-echo -e ">> Gonna backup the following dirs to \e[5m${DEST_DIR}\e[25m:"
+if [ ! -z "${REMOTE}" ];
+then echo -e ">> Gonna backup the following dirs to \e[5m${REMOTE}:${DEST_DIR}\e[25m:"
+else echo -e ">> Gonna backup the following dirs to \e[5m${DEST_DIR}\e[25m:"
+fi
 echo -n ${red}
 cols=`tput cols`
 printf '%0.s-' $(seq 1 $cols)
@@ -134,12 +139,16 @@ while true; do
     esac
 done
 
+# Create destination directory (if it doesn't exist)
+if [ -z "${REMOTE}" ]; then
+    mkdir -p ${DEST_DIR}${HOSTNAME}
+else
+    ssh ${REMOTE} "mkdir -p ${DEST_DIR}"
+    DEST_DIR="${REMOTE}:${DEST_DIR}"
+fi
+
 # Start back-up procedure
 echo ">> Backing up..."
-
-# Create destination directory (if it doesn't exist)
-# TODO: This doesn't work when destination is a remote machine; this should be implemented
-# mkdir -p ${DEST_DIR}${HOSTNAME}
 
 # Get start time
 date=$(date +'%Y-%m-%d %H:%M:%S')
@@ -163,11 +172,3 @@ echo "   -------------------------------"
 echo "   Started @ "${start_time}
 echo "   Ended   @ "${end_time}
 echo "   -------------------------------"
-
-# Append to a log file under `${DEST_DIR}${HOSTNAME}`
-LOG_FILE=${DEST_DIR}"backup.log"
-echo "* BACKUP ${HOSTNAME}" >> ${LOG_FILE}
-echo "  --------------------------------"  >> ${LOG_FILE}
-echo "  Started @ "${start_time}           >> ${LOG_FILE}
-echo "  Ended   @ "${end_time}             >> ${LOG_FILE}
-echo "  --------------------------------"  >> ${LOG_FILE}

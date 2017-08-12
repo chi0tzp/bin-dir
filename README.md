@@ -31,7 +31,7 @@ backup.sh -d /path/to/backup/dir
 backup.sh -d <user>@<ip>:/path/to/backup/dir
 ~~~~
 
-The script will create a directory named after the current hostname (`$HOSTNAME`) under the destination directory (if it does not already exist), i.e., the directory `${DEST_DIR}${HOSTNAME}`. A log file, named `backup.log`, will be created under `${DEST_DIR}${HOSTNAME}`.
+The script will create a directory named after the current hostname (`$HOSTNAME`) under the destination directory (if it does not already exist), i.e., the directory `${DEST_DIR}${HOSTNAME}`. 
 
 
 
