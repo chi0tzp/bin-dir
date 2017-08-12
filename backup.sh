@@ -62,8 +62,23 @@ then
 fi
 
 
+################################################################################
+# For each host (discriminated by the `$HOSTNAME`), define:                    #
+#   i) the root directory under which dirs/files to be backed-up lie           #
+#      (`ROOT_DIR`), and                                                       #
+#   ii) the directories and/or files to be backed-up (array `DIRS`).           #
+#                                                                              #
+# For a new host, named "new_host", add an extra `elif` branch as follows:     #
+# ...                                                                          #
+# elif [ "${HOSTNAME}" == "hilbert" ]                                          #
+# then                                                                         #
+#    ROOT_DIR=<root_dir>                                                       #
+#    DIRS=( <dir1> <dir2> <file1> <file2> )                                    #
+# ...                                                                          #
+################################################################################
+
+
 # RIEMANN
-# -------
 if [ "${HOSTNAME}" == "riemann" ]
 then
     # Define root directory
@@ -84,26 +99,29 @@ then
             ".xbindkeysrc" )
 
 # HILBERT
-# -------
 elif [ "${HOSTNAME}" == "hilbert" ]
 then
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 
 # UNKNOWN HOSTNAME
-# ----------------
 else
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 fi
 
 #
-echo "Hostname:${red}" ${HOSTNAME} "${reset}"
-echo ">> Gonna backup the following dirs to ${DEST_DIR}:"
+echo -e "Hostname:${red} \e[4m${HOSTNAME}\e[24m ${reset}"
+echo -e ">> Gonna backup the following dirs to \e[5m${DEST_DIR}\e[25m:"
 echo -n ${red}
+cols=`tput cols`
+printf '%0.s-' $(seq 1 $cols)
+echo ""
 for item in "${DIRS[@]}"; do
     printf "   %-8s\n" "${item}"
 done | column
+printf '%0.s-' $(seq 1 $cols)
+echo ""
 echo -n ${reset}
 
 # Ask for confirmation
