@@ -37,7 +37,7 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-usage() { echo "Usage: $0 -d <dest_dir> [-r <remote>]" 1>&2; exit 1; }
+usage(){ echo "Usage: backup.sh -d <dest_dir> [-r <remote>]" 1>&2; exit 1; }
 
 # Parse command line arguments
 while getopts ":d:r:" o; do
