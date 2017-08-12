@@ -85,21 +85,19 @@ if [ "${HOSTNAME}" == "riemann" ]
 then
     # Define root directory
     ROOT_DIR=${HOME}"/"
-
     # Define directories (under `ROOT_DIR`) to be backed-up
-    DIRS=( ".tmux.conf" )
-#    DIRS=( "bin/"
-#            "LAB/"
-#            "Dropbox/"
-#            "SpiderOak Hive/"
-#            ".icedove/"
-#            ".ssh/"
-#            ".bashrc"
-#            ".emacs"
-#            ".gitconfig"
-#            ".pdbrc"
-#            ".tmux.conf"
-#            ".xbindkeysrc" )
+    DIRS=( "bin/"
+            "LAB/"
+            "Dropbox/"
+            "SpiderOak Hive/"
+            ".icedove/"
+            ".ssh/"
+            ".bashrc"
+            ".emacs"
+            ".gitconfig"
+            ".pdbrc"
+            ".tmux.conf"
+            ".xbindkeysrc" )
 
 # HILBERT
 elif [ "${HOSTNAME}" == "hilbert" ]
