@@ -15,14 +15,23 @@ ROOT_DIR=${HOME}"/"
 DIRS=( "bin/" ".ssh/" ".tmux.conf" )
 ~~~~
 
-Destination (argument `-d`) can be a local directory (e.g., a usb hard disk drive), or a remote (via [`ssh`](https://linux.die.net/man/1/ssh)) directory. For example,
+For adding a new host, named "new_host", add an extra `elif` branch as follows:
+~~~~
+...
+elif [ "${HOSTNAME}" == "hilbert" ]
+then
+	ROOT_DIR=<root_dir>
+	DIRS=( <dir1> <dir2> ... <file1> <file2> ... )
+...
+~~~~
 
+Destination (argument `-d`) can be a local (e.g., a usb hard disk drive), or a remote directory. For example,
 ~~~~
 backup.sh -d /path/to/backup/dir
 backup.sh -d <user>@<ip>:/path/to/backup/dir
 ~~~~
 
-The script will create a directory named after the current hostname (`$HOSTNAME`) under the destination directory (if it does not exist already).
+The script will create a directory named after the current hostname (`$HOSTNAME`) under the destination directory (if it does not already exist), i.e., the directory `${DEST_DIR}${HOSTNAME}`. A log file, named `backup.log`, will be created under `${DEST_DIR}${HOSTNAME}`.
 
 
 
