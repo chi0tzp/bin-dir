@@ -70,7 +70,7 @@ fi
 #                                                                              #
 # For a new host, named "new_host", add an extra `elif` branch as follows:     #
 # ...                                                                          #
-# elif [ "${HOSTNAME}" == "hilbert" ]                                          #
+# elif [ "${HOSTNAME}" == "new_host" ]                                          #
 # then                                                                         #
 #    ROOT_DIR=<root_dir>                                                       #
 #    DIRS=( <dir1> <dir2> <file1> <file2> )                                    #
