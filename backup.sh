@@ -105,6 +105,23 @@ then
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 
+# GALOIS
+elif [ "${HOSTNAME}" == "galois" ]
+then
+    # Define root directory
+    ROOT_DIR=${HOME}"/"
+    # Define directories (under `ROOT_DIR`) to be backed-up
+    DIRS=( "bin/"
+            "LAB/"
+            "Dropbox/"
+            ".thunderbird/"
+            ".ssh/"
+            ".bashrc"
+            ".emacs"
+            ".gitconfig"
+            ".pdbrc"
+            ".tmux.conf" )
+
 # UNKNOWN HOSTNAME
 else
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
