@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Require `notify-send` command (sudo pacman -S libnotify)
+
 ################################################################################
 ## backup.sh -d <destination>                                                 ##
 ## A bash script for backups using rsync                                      ##
@@ -104,17 +107,17 @@ then
     ROOT_DIR=${HOME}"/"
     # Define directories (under `ROOT_DIR`) to be backed-up
     DIRS=( "bin/"
-            "LAB/"
-            "Dropbox/"
-            "SpiderOak Hive/"
-            ".icedove/"
-            ".ssh/"
-            ".bashrc"
-            ".emacs"
-            ".gitconfig"
-            ".pdbrc"
-            ".tmux.conf"
-            ".xbindkeysrc" )
+           "LAB/"
+           "Dropbox/"
+           "SpiderOak Hive/"
+           ".icedove/"
+           ".ssh/"
+           ".bashrc"
+           ".emacs"
+           ".gitconfig"
+           ".pdbrc"
+           ".tmux.conf"
+           ".xbindkeysrc" )
 # ============================================================================ #
 
 
@@ -133,15 +136,15 @@ then
     ROOT_DIR=${HOME}"/"
     # Define directories (under `ROOT_DIR`) to be backed-up
     DIRS=( "bin/"
-            "LAB/"
-            "Dropbox/"
-            ".thunderbird/"
-            ".ssh/"
-            ".bashrc"
-            ".emacs"
-            ".gitconfig"
-            ".pdbrc"
-            ".tmux.conf" )
+           "LAB/"
+           "Dropbox/"
+           ".thunderbird/"
+           ".ssh/"
+           ".bashrc"
+           ".emacs"
+           ".gitconfig"
+           ".pdbrc"
+           ".tmux.conf" )
 # ============================================================================ #
 
 
@@ -229,3 +232,5 @@ echo "   -------------------------------"
 echo "   Started @ "${start_time}
 echo "   Ended   @ "${end_time}
 echo "   -------------------------------"
+
+notify-send 'backup.sh' "Backup of ${HOSTNAME} is complete!" --icon=dialog-information
