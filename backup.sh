@@ -137,13 +137,11 @@ then
     # Define directories (under `ROOT_DIR`) to be backed-up
     DIRS=( "bin/"
            "LAB/"
-           "Dropbox/"
            ".thunderbird/"
            ".ssh/"
            ".bashrc"
            ".emacs"
            ".gitconfig"
-           ".pdbrc"
            ".tmux.conf" )
 # ============================================================================ #
 
