@@ -137,7 +137,10 @@ then
     # Define directories (under `ROOT_DIR`) to be backed-up
     DIRS=( "bin/"
            "LAB/"
+	   "Downloads/"
            ".thunderbird/"
+	   ".mozilla"
+	   ".PyCharmCE2018.3/"
            ".ssh/"
            ".bashrc"
            ".emacs"
