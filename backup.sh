@@ -137,10 +137,9 @@ then
     # Define directories (under `ROOT_DIR`) to be backed-up
     DIRS=( "bin/"
            "LAB/"
-	   "Downloads/"
+	       "Downloads/"
            ".thunderbird/"
-	   ".mozilla"
-	   ".PyCharmCE2018.3/"
+	       ".mozilla"
            ".ssh/"
            ".bashrc"
            ".emacs"
@@ -214,11 +213,11 @@ do
     echo -n "   --" ${i}" ..."
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync -azq --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -azqp --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
-        rsync -azq --delete-after -e "ssh -p ${REMOTE_PORT}" ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -azqp --delete-after -e "ssh -p ${REMOTE_PORT}" ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
     fi
 done
 
