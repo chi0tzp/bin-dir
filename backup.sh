@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Require `notify-send` command (sudo pacman -S libnotify)
 
 ################################################################################
@@ -32,11 +31,13 @@
 # -- List of months --
 MONTHS=(null Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
 
+b=$(tput bold)
+n=$(tput sgr0)
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-usage(){ echo "Usage: backup.sh -l <local_dest_dir> -r <remote_machine> [-p <remote_port> [-d <remote_dest_dir>]]" 1>&2; exit 1; }
+usage(){ echo "${b}Usage:${n} backup.sh -l <local_dest_dir> -r <remote_machine> [-p <remote_port> [-d <remote_dest_dir>]]" 1>&2; exit 1; }
 
 # Parse command line arguments
 REMOTE_PORT=22
@@ -75,15 +76,9 @@ if [ -z "${LOCAL_DEST_DIR}" ] && [ -z "${REMOTE_MACHINE}" ]; then
 fi
 
 if [ ! -z "${LOCAL_DEST_DIR}" ] && [ ! -z "${REMOTE_MACHINE}" ]; then
-    echo "Error: Select either a local destination dir or a remote one."
+    echo "${red}[Error]${reset}: Select either a local destination dir or a remote one."
     usage
 fi
-
-echo "DBG: echo given arguments"
-echo "LOCAL_DEST_DIR=${LOCAL_DEST_DIR}"
-echo "REMOTE_MACHINE=${REMOTE_MACHINE}"
-echo "REMOTE_PORT=${REMOTE_PORT}"
-echo "REMOTE_DEST_DIR=${REMOTE_DEST_DIR}"
 
 ################################################################################
 # For each host (discriminated by the `$HOSTNAME`), define:                    #
@@ -93,72 +88,54 @@ echo "REMOTE_DEST_DIR=${REMOTE_DEST_DIR}"
 #                                                                              #
 # For a new host, named "new_host", add an extra `elif` branch as follows:     #
 # ...                                                                          #
-# elif [ "${HOSTNAME}" == "new_host" ]                                          #
+# elif [ "${HOSTNAME}" == "new_host" ]                                         #
 # then                                                                         #
 #    ROOT_DIR=<root_dir>                                                       #
 #    DIRS=( <dir1> <dir2> <file1> <file2> )                                    #
 # ...                                                                          #
 ################################################################################
 
-# ================================== RIEMANN ================================= #
+# ================================ RIEMANN =================================== #
 if [ "${HOSTNAME}" == "riemann" ]
 then
     # Define root directory
     ROOT_DIR=${HOME}"/"
-    # Define directories (under `ROOT_DIR`) to be backed-up
-    DIRS=( "bin/"
-           "LAB/"
-           "Dropbox/"
-           "SpiderOak Hive/"
-           ".icedove/"
-           ".ssh/"
-           ".bashrc"
-           ".emacs"
-           ".gitconfig"
-           ".pdbrc"
-           ".tmux.conf"
-           ".xbindkeysrc" )
+    # Define files and directories (under `ROOT_DIR`) to be backed-up
+    DIRS=( "<dir>/" "file" )
 # ============================================================================ #
 
-
-# ================================== HILBERT ================================= #
-elif [ "${HOSTNAME}" == "hilbert" ]
-then
-    echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
-    exit;
-# ============================================================================ #
-
-
-# =================================== GALOIS ================================= #
+# ================================= GALOIS =================================== #
 elif [ "${HOSTNAME}" == "galois" ]
 then
     # Define root directory
     ROOT_DIR=${HOME}"/"
-    # Define directories (under `ROOT_DIR`) to be backed-up
-    DIRS=( "bin/"
-           "LAB/"
-	       "Downloads/"
-           ".thunderbird/"
-	       ".mozilla"
-           ".ssh/"
-           ".bashrc"
-           ".emacs"
-           ".gitconfig"
-           ".tmux.conf" )
+    # Define files and directories (under `ROOT_DIR`) to be backed-up
+    # DIRS=( "bin/"
+    #        "LAB/"
+	  #      "Downloads/"
+    #        ".thunderbird/"
+	  #      ".mozilla"
+    #        ".ssh/"
+    #        ".bashrc"
+    #        ".emacs"
+    #        ".gitconfig"
+    #        ".tmux.conf" )
+    DIRS=( ".ssh/" )
+
 # ============================================================================ #
 
-
-# ============================== UNKNOWN HOSTNAME ============================ #
+# ============================ UNKNOWN HOSTNAME ============================== #
 else
     echo "## Error: Unknown hostname: ${HOSTNAME}. Goodbye!"
     exit;
 fi
 # ============================================================================ #
 
-echo -e "Hostname:${red} \e[4m${HOSTNAME}\e[24m ${reset}"
+
+echo -e "Hostname:${red}${b} \e[4m${HOSTNAME}\e[24m ${n}${reset}"
 if [ ! -z "${LOCAL_DEST_DIR}" ];
 then
-    echo -e ">> Gonna backup the following dirs to \e[5m${LOCAL_DEST_DIR}${HOSTNAME}.bkp/\e[25m:"
+    echo -e ">> Gonna backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
 fi
 if [ ! -z "${REMOTE_MACHINE}" ];
 then
@@ -178,11 +155,11 @@ echo -n ${reset}
 
 # Ask for confirmation
 while true; do
-    read -p ">> Continue (y/n)?" yn
+    read -p ">> Continue (y/n)? " yn
     case ${yn} in
-        [Yy]* ) break;;
-        [Nn]* ) echo ">> OK. Goodbye!";exit;;
-            * ) echo "## Please answer (y)es or (n)o...";;
+        [Yy] ) break;;
+        [Nn] ) echo ">> OK. Goodbye!";exit;;
+          * ) echo "   ${red}Please answer (y)es or (n)o...${reset}";;
     esac
 done
 
@@ -213,7 +190,8 @@ do
     echo -n "   --" ${i}" ..."
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync -azqp --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        # rsync -azqp --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -avzzq --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
