@@ -58,18 +58,24 @@ if [ ! -z "${LOCAL_DEST_DIR}" ] && [ ! -z "${REMOTE_MACHINE}" ]; then
 fi
 
 ################################################################################
-# For each host (discriminated by the `$HOSTNAME`), define:                    #
-#   i) the root directory under which dirs/files to be backed-up lie           #
-#      (`ROOT_DIR`), and                                                       #
-#   ii) the directories and/or files to be backed-up (array `DIRS`).           #
-#                                                                              #
-# For a new host, named "new_host", add an extra `elif` branch as follows:     #
-# ...                                                                          #
-# elif [ "${HOSTNAME}" == "new_host" ]                                         #
-# then                                                                         #
-#    ROOT_DIR=<root_dir>                                                       #
-#    DIRS=( <dir1> <dir2> <file1> <file2> )                                    #
-# ...                                                                          #
+## For each host (discriminated by the `$HOSTNAME`), define:                  ##
+##   i) the source root directory (`SRC_ROOT_DIR`) under which dirs/files to  ##
+##      be backed-up lie (typically SRC_ROOT_DIR=${HOME}"/"), and             ##
+##   ii) the directories and/or files to be backed-up (`SRC_FILES`), as well  ##
+##       as a list of excluded files/dirs (see example below).                ##
+##                                                                            ##
+## For a new host, named "new_host", add an extra `elif` branch as follows:   ##
+## ...                                                                        ##
+## elif [ "${HOSTNAME}" == "new_host" ]                                       ##
+## then                                                                       ##
+##    SRC_ROOT_DIR=<root_dir>                                                 ##
+##    SRC_FILES=(                                                             ##
+##       ["<file>"]=""                                                        ##
+##       ["<dir>"]="<file_1> <file_2> ... <file_n>"                           ##
+##       ...                                                                  ##
+##    )                                                                       ##
+## ...                                                                        ##
+##                                                                            ##
 ################################################################################
 
 # ================================= GALOIS =================================== #
@@ -77,8 +83,8 @@ if [ "${HOSTNAME}" == "galois" ]
 then
     # Define files and directories, (under `ROOT_DIR`) to be backed-up
     SRC_ROOT_DIR=${HOME}"/"
-    declare -A array
-    array=(
+    declare -A SRC_FILES
+    SRC_FILES=(
         [".gitconfig"]=""
         [".emacs"]=""
         [".ssh/"]=""
@@ -109,7 +115,7 @@ echo -n ${red}
 cols=`tput cols`
 printf '%0.s-' $(seq 1 $cols)
 echo ""
-for item in "${!array[@]}"; do
+for item in "${!SRC_FILES[@]}"; do
     printf "   %-8s\n" "${item}"
 done | column
 printf '%0.s-' $(seq 1 $cols)
@@ -147,15 +153,15 @@ read Y M D h m s <<< ${date//[-: ]/ };
 start_time="$Y-$M-$D @ $h:$m:$s"
 
 # === Back-up ===
-for i in "${!array[@]}"; do
+for i in "${!SRC_FILES[@]}"; do
     echo -n "   --" ${i}" ..."
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync -aAXSHPrq --numeric-ids --delete --delete-excluded --exclude "${array[$i]}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
+        rsync -aAXSHPrq --numeric-ids --delete --delete-excluded --exclude "${SRC_FILES[$i]}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
-        rsync -aAXSHPrq --numeric-ids --delete --exclude "${array[$i]}" -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
+        rsync -aAXSHPrq --numeric-ids --delete --exclude "${SRC_FILES[$i]}" -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
     fi
 done
 
