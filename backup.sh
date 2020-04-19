@@ -1,32 +1,9 @@
 #!/bin/bash
-# Require `notify-send` command (sudo pacman -S libnotify)
-
 ################################################################################
-## backup.sh -d <destination>                                                 ##
 ## A bash script for backups using rsync                                      ##
 ##                                                                            ##
-##                                                                            ##
 ################################################################################
-#                                                                              #
-# RSYNC Options:                                                               #
-#                                                                              #
-# -a : --archive               archive mode; equals -rlptgoD (no -H,-A,-X)     #
-#      --no-OPTION             turn off an implied OPTION (e.g. --no-D)        #
-#                                                                              #
-# -v : --verbose               increase verbosity                              #
-#      --info=FLAGS            fine-grained informational verbosity            #
-#      --debug=FLAGS           fine-grained debug verbosity                    #
-#      --msgs2stderr           special output handling for debugging           #
-#                                                                              #
-# -e : --del                   an alias for --delete-during                    #
-#      --delete                delete extraneous files from dest dirs          #
-#      --delete-before         receiver deletes before xfer, not during        #
-#      --delete-during         receiver deletes during the transfer            #
-#      --delete-delay          find deletions during, delete after             #
-#      --delete-after          receiver deletes after transfer, not during     #
-#      --delete-excluded       also delete excluded files from dest dirs       #
-#                                                                              #
-################################################################################
+# Require `notify-send` command (sudo pacman -S libnotify)
 
 # -- List of months --
 MONTHS=(null Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
@@ -95,28 +72,20 @@ fi
 # ...                                                                          #
 ################################################################################
 
-# ================================ RIEMANN =================================== #
-if [ "${HOSTNAME}" == "riemann" ]
-then
-    # Define source root directory
-    ROOT_DIR=${HOME}"/"
-    # Define files and directories (under `ROOT_DIR`) to be backed-up
-    DIRS=( "<dir>/" "file" )
-# ============================================================================ #
-
 # ================================= GALOIS =================================== #
-elif [ "${HOSTNAME}" == "galois" ]
+if [ "${HOSTNAME}" == "galois" ]
 then
-    # Define source root directory
-    ROOT_DIR=${HOME}"/"
-    # Define files and directories (under `ROOT_DIR`) to be backed-up
-    DIRS=( ".gitconfig"
-           ".emacs"
-           ".ssh/"
-           ".mozilla"
-           ".thunderbird/"
-           "LAB/" )
-
+    # Define files and directories, (under `ROOT_DIR`) to be backed-up
+    SRC_ROOT_DIR=${HOME}"/"
+    declare -A array
+    array=(
+        [".gitconfig"]=""
+        [".emacs"]=""
+        [".ssh/"]=""
+        [".thunderbird/"]=""
+        ["LAB/"]="datasets"
+        ["temp_dir/"]="test_1.txt"
+    )
 # ============================================================================ #
 
 # ============================ UNKNOWN HOSTNAME ============================== #
@@ -126,8 +95,7 @@ else
 fi
 # ============================================================================ #
 
-
-echo -e "Hostname:${red}${b} \e[4m${HOSTNAME}\e[24m ${n}${reset}"
+echo -e "Hostname: ${red}${b}${HOSTNAME}${n}${reset}"
 if [ ! -z "${LOCAL_DEST_DIR}" ];
 then
     echo -e ">> Gonna backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
@@ -141,7 +109,7 @@ echo -n ${red}
 cols=`tput cols`
 printf '%0.s-' $(seq 1 $cols)
 echo ""
-for item in "${DIRS[@]}"; do
+for item in "${!array[@]}"; do
     printf "   %-8s\n" "${item}"
 done | column
 printf '%0.s-' $(seq 1 $cols)
@@ -178,21 +146,18 @@ date=$(date +'%Y-%m-%d %H:%M:%S')
 read Y M D h m s <<< ${date//[-: ]/ };
 start_time="$Y-$M-$D @ $h:$m:$s"
 
-# Back-up
-# -- rsync command and options --
-for i in "${DIRS[@]}"
-do
+# === Back-up ===
+for i in "${!array[@]}"; do
     echo -n "   --" ${i}" ..."
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync -aAXSHPrq --numeric-ids --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -aAXSHPrq --numeric-ids --delete --delete-excluded --exclude "${array[$i]}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
-        rsync -aAXSHPrq --numeric-ids --delete-after -e "ssh -p ${REMOTE_PORT}" ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -aAXSHPrq --numeric-ids --delete --exclude "${array[$i]}" -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
     fi
 done
-
 
 # Get end time
 date=$(date +'%Y-%m-%d %H:%M:%S')
