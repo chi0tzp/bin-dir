@@ -5,15 +5,14 @@
 ################################################################################
 # Require `notify-send` command (sudo pacman -S libnotify)
 
-# -- List of months --
-MONTHS=(null Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
-
+# tput formatters (part of `ncurses` package)
 b=$(tput bold)
 n=$(tput sgr0)
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
+# Auxiliary function for printing the correct use of the script
 usage(){ echo "${b}Usage:${n} backup.sh -l <local_dest_dir> -r <remote_machine> [-p <remote_port> [-d <remote_dest_dir>]]" 1>&2; exit 1; }
 
 # Parse command line arguments
