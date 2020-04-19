@@ -98,7 +98,7 @@ fi
 # ================================ RIEMANN =================================== #
 if [ "${HOSTNAME}" == "riemann" ]
 then
-    # Define root directory
+    # Define source root directory
     ROOT_DIR=${HOME}"/"
     # Define files and directories (under `ROOT_DIR`) to be backed-up
     DIRS=( "<dir>/" "file" )
@@ -107,20 +107,15 @@ then
 # ================================= GALOIS =================================== #
 elif [ "${HOSTNAME}" == "galois" ]
 then
-    # Define root directory
+    # Define source root directory
     ROOT_DIR=${HOME}"/"
     # Define files and directories (under `ROOT_DIR`) to be backed-up
-    # DIRS=( "bin/"
-    #        "LAB/"
-	  #      "Downloads/"
-    #        ".thunderbird/"
-	  #      ".mozilla"
-    #        ".ssh/"
-    #        ".bashrc"
-    #        ".emacs"
-    #        ".gitconfig"
-    #        ".tmux.conf" )
-    DIRS=( ".ssh/" )
+    DIRS=( ".gitconfig"
+           ".emacs"
+           ".ssh/"
+           ".mozilla"
+           ".thunderbird/"
+           "LAB/" )
 
 # ============================================================================ #
 
@@ -190,12 +185,11 @@ do
     echo -n "   --" ${i}" ..."
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        # rsync -azqp --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
-        rsync -avzzq --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -aAXSHPrq --numeric-ids --delete-after ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
-        rsync -azqp --delete-after -e "ssh -p ${REMOTE_PORT}" ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
+        rsync -aAXSHPrq --numeric-ids --delete-after -e "ssh -p ${REMOTE_PORT}" ${ROOT_DIR}"$i" ${DEST_DIR}"$i" && echo "Done!"
     fi
 done
 
