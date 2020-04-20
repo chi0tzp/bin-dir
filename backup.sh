@@ -11,9 +11,11 @@
 # tput formatters (part of `ncurses` package)
 b=$(tput bold)
 n=$(tput sgr0)
+blink="\E[5m"
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
+
 ################################################################################
 ## rsync arguments:                                                           ##
 ##                                                                            ##
@@ -133,14 +135,15 @@ else
 fi
 # ============================================================================ #
 
-echo -e "Hostname: ${red}${b}${HOSTNAME}${n}${reset}"
+
+echo -e "#.Backup ${red}${b}${HOSTNAME}${n}${reset}"
 if [ ! -z "${LOCAL_DEST_DIR}" ];
 then
-    echo -e ">> Going to backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
+    echo -e "  \__Going to backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
 fi
 if [ ! -z "${REMOTE_MACHINE}" ];
 then
-    echo -e ">> Going to backup the following dirs to \e[5m${REMOTE_MACHINE}:${REMOTE_DEST_DIR} (port:${REMOTE_PORT})\e[25m:"
+    echo -e "  \__Going to backup the following dirs to \e[5m${REMOTE_MACHINE}:${REMOTE_DEST_DIR} (port:${REMOTE_PORT})\e[25m:"
 fi
 
 echo -n ${red}
@@ -156,11 +159,11 @@ echo -n ${reset}
 
 # Ask for confirmation
 while true; do
-    read -p ">> Continue (y/n)? " yn
+    read -p "#.Continue (y/n)? " yn
     case ${yn} in
         [Yy] ) break;;
-        [Nn] ) echo ">> OK. Goodbye!";exit;;
-          * ) echo "   ${red}Please answer (y)es or (n)o...${reset}";;
+        [Nn] ) echo "  \__OK. Goodbye!";exit;;
+          * ) echo "  ${red}\__Please answer (y)es or (n)o...${reset}";;
     esac
 done
 
@@ -177,7 +180,7 @@ then
 fi
 
 # Start back-up procedure
-echo ">> Backing up..."
+echo "#.Backing up..."
 
 # Get start time
 date=$(date +'%Y-%m-%d %H:%M:%S')
@@ -186,7 +189,7 @@ start_time="$Y-$M-$D @ $h:$m:$s"
 
 # === Back-up ===
 for i in "${!SRC_FILES[@]}"; do
-    echo -n "   --" ${i}" ..."
+    echo -en "  \__${blink}${i}..."
 
     # Create temporary exclude list file
     exclude_list_tmp_filename="tmp_exclude_list.$(gen_random_string)"
@@ -200,11 +203,11 @@ for i in "${!SRC_FILES[@]}"; do
     # Run rsync!
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
-        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
     fi
 
     # Remove temporary exclude list file
@@ -217,10 +220,10 @@ date=$(date +'%Y-%m-%d %H:%M:%S')
 read Y M D h m s <<< ${date//[-: ]/ };
 end_time="$Y-$M-$D @ $h:$m:$s"
 
-echo ">> Backup complete!"
-echo "   -------------------------------"
-echo "   Started @ "${start_time}
-echo "   Ended   @ "${end_time}
-echo "   -------------------------------"
+echo "#.Backup complete!"
+echo "  -------------------------------"
+echo "  Started @ "${start_time}
+echo "  Ended   @ "${end_time}
+echo "  -------------------------------"
 
 # notify-send 'backup.sh' "Backup of ${HOSTNAME} is complete!" --icon=dialog-information
