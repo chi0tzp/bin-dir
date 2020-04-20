@@ -1,7 +1,10 @@
 #!/bin/bash
 ################################################################################
-## A bash script for backups using rsync                                      ##
+## A bash script for keeping backups in local or remote directories using     ##
+## rsync.                                                                     ##
 ##                                                                            ##
+## Author  : Christos Tzelepis                                                ##
+## Contact : null.geppetto@gmail.com                                          ##
 ################################################################################
 # Require `notify-send` command (sudo pacman -S libnotify)
 
@@ -220,4 +223,4 @@ echo "   Started @ "${start_time}
 echo "   Ended   @ "${end_time}
 echo "   -------------------------------"
 
-notify-send 'backup.sh' "Backup of ${HOSTNAME} is complete!" --icon=dialog-information
+# notify-send 'backup.sh' "Backup of ${HOSTNAME} is complete!" --icon=dialog-information
