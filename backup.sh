@@ -200,11 +200,12 @@ for i in "${!SRC_FILES[@]}"; do
         echo $f >> $exclude_list_tmp_filename
     done
 
-    # Run rsync!
+    # Run rsync for a local destination
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
         rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
     fi
+    # Run rsync for a remote destination
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
         rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
