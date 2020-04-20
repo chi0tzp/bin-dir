@@ -11,9 +11,39 @@ n=$(tput sgr0)
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
+################################################################################
+## rsync arguments:                                                           ##
+##                                                                            ##
+## -a, --archive          archive mode; equals -rlptgoD (no -H,-A,-X)         ##
+## -A, --acls             preserve ACLs (implies -p)                          ##
+## -X, --xattrs           preserve extended attributes                        ##
+## -S, --sparse           handle sparse files efficiently                     ##
+## -H, --hard-links       preserve hard links                                 ##
+## -P                     same as --partial --progress                        ##
+## -q, --quiet            Quiet; do not write anything to standard output.    ##
+##                        Exit immediately with zero status if any match is   ##
+##                        found, even  if  an  error  was detected.           ##
+##                        Also see the -s or --no-messages option.            ##
+## --del                  an alias for --delete-during                        ##
+## --delete               delete extraneous files from dest dirs              ##
+## --delete-before        receiver deletes before transfer (default)          ##
+## --delete-during        receiver deletes during xfer, not before            ##
+## --delete-delay         find deletions during, delete after                 ##
+## --delete-after         receiver deletes after transfer, not before         ##
+## --delete-excluded      also delete excluded files from dest dirs           ##
+## --exclude=PATTERN      exclude files matching PATTERN                      ##
+## --exclude-from=FILE    read exclude patterns from FILE                     ##
+##                                                                            ##
+################################################################################
+RSYNC_ARGS="-aAXSHPr --quiet --delete --delete-excluded"
 
-# Auxiliary function for printing the correct use of the script
+# Help function
 usage(){ echo "${b}Usage:${n} backup.sh -l <local_dest_dir> -r <remote_machine> [-p <remote_port> [-d <remote_dest_dir>]]" 1>&2; exit 1; }
+
+# Generate random alphanumeric string function
+function gen_random_string(){
+    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
+}
 
 # Parse command line arguments
 REMOTE_PORT=22
@@ -61,7 +91,7 @@ fi
 ##   i) the source root directory (`SRC_ROOT_DIR`) under which dirs/files to  ##
 ##      be backed-up lie (typically SRC_ROOT_DIR=${HOME}"/"), and             ##
 ##   ii) the directories and/or files to be backed-up (`SRC_FILES`), as well  ##
-##       as a list of excluded files/dirs (see example below).                ##
+##       as a list of excluded files/dirs split by ";" (see example below).   ##
 ##                                                                            ##
 ## For a new host, named "new_host", add an extra `elif` branch as follows:   ##
 ## ...                                                                        ##
@@ -70,7 +100,7 @@ fi
 ##    SRC_ROOT_DIR=<root_dir>                                                 ##
 ##    SRC_FILES=(                                                             ##
 ##       ["<file>"]=""                                                        ##
-##       ["<dir>"]="<file_1> <file_2> ... <file_n>"                           ##
+##       ["<dir>"]="<file_1>;<file_2>;...;<file_n>"                           ##
 ##       ...                                                                  ##
 ##    )                                                                       ##
 ## ...                                                                        ##
@@ -89,7 +119,7 @@ then
         [".ssh/"]=""
         [".thunderbird/"]=""
         ["LAB/"]="datasets"
-        ["temp_dir/"]="test_1.txt"
+        ["Education/"]=""
     )
 # ============================================================================ #
 
@@ -103,11 +133,11 @@ fi
 echo -e "Hostname: ${red}${b}${HOSTNAME}${n}${reset}"
 if [ ! -z "${LOCAL_DEST_DIR}" ];
 then
-    echo -e ">> Gonna backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
+    echo -e ">> Going to backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
 fi
 if [ ! -z "${REMOTE_MACHINE}" ];
 then
-    echo -e ">> Gonna backup the following dirs to \e[5m${REMOTE_MACHINE}:${REMOTE_DEST_DIR} (port:${REMOTE_PORT})\e[25m:"
+    echo -e ">> Going to backup the following dirs to \e[5m${REMOTE_MACHINE}:${REMOTE_DEST_DIR} (port:${REMOTE_PORT})\e[25m:"
 fi
 
 echo -n ${red}
@@ -154,14 +184,29 @@ start_time="$Y-$M-$D @ $h:$m:$s"
 # === Back-up ===
 for i in "${!SRC_FILES[@]}"; do
     echo -n "   --" ${i}" ..."
+
+    # Create temporary exclude list file
+    exclude_list_tmp_filename="tmp_exclude_list.$(gen_random_string)"
+    touch $exclude_list_tmp_filename
+    IFS=';' read -ra array <<< "${SRC_FILES[$i]}"
+    for f in "${array[@]}"
+    do
+        echo $f >> $exclude_list_tmp_filename
+    done
+
+    # Run rsync!
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync -aAXSHPrq --numeric-ids --delete --delete-excluded --exclude "${SRC_FILES[$i]}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
     fi
     if [ ! -z "${REMOTE_MACHINE}" ];
     then
-        rsync -aAXSHPrq --numeric-ids --delete --exclude "${SRC_FILES[$i]}" -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo "Done!"
     fi
+
+    # Remove temporary exclude list file
+    rm -f $exclude_list_tmp_filename
+
 done
 
 # Get end time
