@@ -15,7 +15,7 @@ flag=$@
 if [[ "${flag}" == "on" ]]; then
     echo "Mount sevendb..."
     mkdir -p ~/sevendb
-    sshfs -p 1312 -C chi@rpi4:/home/sevendb/ ~/sevendb/ -o idmap=user
+    sshfs -p 1312 -C chi@192.168.0.28:/home/sevendb/ ~/sevendb/ -o idmap=user
 elif [[ "${flag}" == "off" ]]; then
     echo "Unmount sevendb..."
     fusermount3 -u ~/sevendb/
