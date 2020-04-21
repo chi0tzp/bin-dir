@@ -53,6 +53,7 @@ function gen_random_string(){
 # Parse command line arguments
 REMOTE_PORT=22
 REMOTE_DEST_DIR="${HOSTNAME}.bkp/"
+# TODO: add an argument for archiving `$DEST_DIR` into a tar file
 while getopts ":l:r:p:d:" o; do
     case "${o}" in
         l)
