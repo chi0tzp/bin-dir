@@ -43,7 +43,17 @@ reset=`tput sgr0`
 RSYNC_ARGS="-aAXSHPr --quiet --delete --delete-excluded"
 
 # Help function
-usage(){ echo "${b}Usage:${n} backup.sh -l <local_dest_dir> -r <remote_machine> [-p <remote_port> [-d <remote_dest_dir>]]" 1>&2; exit 1; }
+usage(){
+    echo "${b}Usage:${n} backup.sh -l <local_dest_dir> -r <remote_host>
+${b}Options:${n}
+    ${b}-l <local_dest_dir>${n} : define a local destination directory
+    ${b}-r <remote_host>${n}    : define a remote host in the following form:
+                            <host>:<remote_dir>, where <host> is a remote host entry in
+                          ssh config file and <remote_dir> a remote directory under this
+                          remote host
+    " 1>&2; exit 1;
+
+}
 
 # Generate random alphanumeric string function
 function gen_random_string(){
@@ -51,44 +61,34 @@ function gen_random_string(){
 }
 
 # Parse command line arguments
-REMOTE_PORT=22
-REMOTE_DEST_DIR="${HOSTNAME}.bkp/"
-# TODO: add an argument for archiving `$DEST_DIR` into a tar file
-while getopts ":l:r:p:d:" o; do
+while getopts ":l:r:" o; do
     case "${o}" in
-        l)
-            if [ "${OPTARG: -1}" != "/" ]
-            then
-                OPTARG=${OPTARG}"/"
-            fi
-            LOCAL_DEST_DIR="${OPTARG}"
-            ;;
-        r)
-            REMOTE_MACHINE=${OPTARG}
-            ;;
-        p)
-            REMOTE_PORT=${OPTARG}
-            ;;
-        d)
-            if [ "${OPTARG: -1}" != "/" ]
-            then
-                OPTARG=${OPTARG}"/"
-            fi
-            REMOTE_DEST_DIR=${OPTARG}
-            ;;
-        *)
-            usage
-            ;;
+        l) if [ "${OPTARG: -1}" != "/" ]
+           then
+              OPTARG=${OPTARG}"/"
+           fi
+           LOCAL_DEST_DIR="${OPTARG}"
+           ;;
+        r) if [ "${OPTARG: -1}" != "/" ]
+           then
+              OPTARG=${OPTARG}"/"
+           fi
+           REMOTE_HOST=${OPTARG}
+           ;;
+        *) usage
+           ;;
     esac
 done
 shift $((OPTIND-1))
 
-if [ -z "${LOCAL_DEST_DIR}" ] && [ -z "${REMOTE_MACHINE}" ]; then
+# Check given arguments
+if [ -z "${LOCAL_DEST_DIR}" ] && [ -z "${REMOTE_HOST}" ]; then
+    echo "${red}[Error]${reset}: Select either a local destination dir or a remote host."
     usage
 fi
 
-if [ ! -z "${LOCAL_DEST_DIR}" ] && [ ! -z "${REMOTE_MACHINE}" ]; then
-    echo "${red}[Error]${reset}: Select either a local destination dir or a remote one."
+if [ ! -z "${LOCAL_DEST_DIR}" ] && [ ! -z "${REMOTE_HOST}" ]; then
+    echo "${red}[Error]${reset}: Select either a local destination dir or a remote host."
     usage
 fi
 
@@ -123,9 +123,10 @@ then
         [".gitconfig"]=""
         [".emacs"]=""
         [".ssh/"]=""
-        [".thunderbird/"]=""
-        ["LAB/"]="datasets"
-        ["Education/"]=""
+        ["test_ssh.txt"]=""
+        # [".thunderbird/"]=""
+        # ["LAB/"]="datasets"
+        # ["Education/"]=""
     )
 # ============================================================================ #
 
@@ -138,13 +139,15 @@ fi
 
 
 echo -e "#.Backup ${red}${b}${HOSTNAME}${n}${reset}"
+
 if [ ! -z "${LOCAL_DEST_DIR}" ];
 then
-    echo -e "  \__Going to backup the following dirs to ${b}${LOCAL_DEST_DIR}${HOSTNAME}: ${n}"
+    echo -e "  \__Going to backup the following dirs to ${b}${LOCAL_DEST_DIR}: ${n}"
 fi
-if [ ! -z "${REMOTE_MACHINE}" ];
+
+if [ ! -z "${REMOTE_HOST}" ];
 then
-    echo -e "  \__Going to backup the following dirs to \e[5m${REMOTE_MACHINE}:${REMOTE_DEST_DIR} (port:${REMOTE_PORT})\e[25m:"
+    echo -e "  \__Going to backup the following dirs to ${b}${REMOTE_HOST}: ${n}"
 fi
 
 echo -n ${red}
@@ -171,13 +174,14 @@ done
 # Create destination directory (if it doesn't exist)
 if [ ! -z "${LOCAL_DEST_DIR}" ];
 then
-    mkdir -p ${LOCAL_DEST_DIR}"${HOSTNAME}.bkp/"
-    DEST_DIR=${LOCAL_DEST_DIR}"${HOSTNAME}.bkp/"
+    LOCAL_DEST_DIR=${LOCAL_DEST_DIR}"${HOSTNAME}.bkp/"
+    mkdir -p ${LOCAL_DEST_DIR}
 fi
-if [ ! -z "${REMOTE_MACHINE}" ];
+if [ ! -z "${REMOTE_HOST}" ];
 then
-    ssh ${REMOTE_MACHINE} -p ${REMOTE_PORT} "mkdir -p ${REMOTE_DEST_DIR}"
-    DEST_DIR=${REMOTE_MACHINE}:${REMOTE_DEST_DIR}
+    IFS=':' read -ra HOST <<< "${REMOTE_HOST}"
+    REMOTE_DEST_DIR="${REMOTE_HOST}${HOSTNAME}.bkp/"
+    ssh ${HOST[0]} "mkdir -p ${HOST[1]}${HOSTNAME}.bkp/"
 fi
 
 # Start back-up procedure
@@ -204,12 +208,12 @@ for i in "${!SRC_FILES[@]}"; do
     # Run rsync for a local destination
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${LOCAL_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
     fi
     # Run rsync for a remote destination
-    if [ ! -z "${REMOTE_MACHINE}" ];
+    if [ ! -z "${REMOTE_HOST}" ];
     then
-        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename -e "ssh -p ${REMOTE_PORT}" ${SRC_ROOT_DIR}${i} ${DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${REMOTE_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
     fi
 
     # Remove temporary exclude list file
