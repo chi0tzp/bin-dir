@@ -123,10 +123,9 @@ then
         [".gitconfig"]=""
         [".emacs"]=""
         [".ssh/"]=""
-        ["test_ssh.txt"]=""
-        # [".thunderbird/"]=""
-        # ["LAB/"]="datasets"
-        # ["Education/"]=""
+        [".thunderbird/"]=""
+        ["LAB/"]="datasets"
+        ["Education/"]=""
     )
 # ============================================================================ #
 
