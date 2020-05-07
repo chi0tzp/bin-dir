@@ -128,7 +128,17 @@ then
         ["Education/"]=""
         ["Dropbox/"]=""
     )
-# ============================================================================ #
+# ================================= GAUSS ==================================== #
+elif [ "${HOSTNAME}" == "gauss" ]
+then
+    # Define files and directories, (under `ROOT_DIR`) to be backed-up
+    SRC_ROOT_DIR=${HOME}"/"
+    declare -A SRC_FILES
+    SRC_FILES=(
+        [".ssh/"]=""
+        [".thunderbird/"]=""
+        ["LAB/"]="Datasets"
+    )
 
 # ============================ UNKNOWN HOSTNAME ============================== #
 else
