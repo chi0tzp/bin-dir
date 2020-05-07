@@ -218,12 +218,12 @@ for i in "${!SRC_FILES[@]}"; do
     # Run rsync for a local destination
     if [ ! -z "${LOCAL_DEST_DIR}" ];
     then
-        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${LOCAL_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${LOCAL_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!" || echo -e "\r${reset}  \__${i}...ERROR!"
     fi
     # Run rsync for a remote destination
     if [ ! -z "${REMOTE_HOST}" ];
     then
-        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${REMOTE_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!"
+        rsync1 ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${REMOTE_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!" || echo -e "\r${reset}  \__${i}...ERROR!"
     fi
 
     # Remove temporary exclude list file
