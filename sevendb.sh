@@ -32,7 +32,7 @@ help(){
 OPTIND=1
 SEVENDB_IP=192.168.0.28
 SEVENDB_SSH_PORT=1312
-SEVENDB_MOUNT_POINT=~/sevendb/
+SEVENDB_MOUNT_POINT=~/SevenDB/
 
 # Parse command line arguments
 while getopts ":r:p:m:" options
@@ -60,6 +60,7 @@ if [[ $# -gt 0 ]]; then
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount sevendb..."
         fusermount3 -u $SEVENDB_MOUNT_POINT
+	rm -r $SEVENDB_MOUNT_POINT
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount sevendb on $SEVENDB_MOUNT_POINT),"
@@ -72,7 +73,7 @@ else
     mountpoint $SEVENDB_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
-        echo "SevenDB is already mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
+        echo "SevenDB is mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
     else
         echo "SevenDB is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
     fi
