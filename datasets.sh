@@ -32,7 +32,7 @@ help(){
 OPTIND=1
 DATASETS_IP=192.168.0.28
 DATASETS_SSH_PORT=1312
-DATASETS_MOUNT_POINT=~/datasets/
+DATASETS_MOUNT_POINT=~/DATASETS/
 
 # Parse command line arguments
 while getopts ":r:p:m:" options
@@ -60,6 +60,7 @@ if [[ $# -gt 0 ]]; then
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount datasets..."
         fusermount3 -u $DATASETS_MOUNT_POINT
+	rm -r $DATASETS_MOUNT_POINT
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount datasets on $DATASETS_MOUNT_POINT),"
@@ -72,7 +73,7 @@ else
     mountpoint $DATASETS_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
-        echo "DATASETS is already mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
+        echo "DATASETS is mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
     else
         echo "DATASETS is ${b}${red}not${reset}${n} mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
     fi
