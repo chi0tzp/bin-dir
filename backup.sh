@@ -127,6 +127,7 @@ then
         ["LAB/"]="datasets"
         ["Education/"]=""
         ["Dropbox/"]=""
+        ["Downloads"]=""
     )
 # ================================= GAUSS ==================================== #
 elif [ "${HOSTNAME}" == "gauss" ]
@@ -223,7 +224,7 @@ for i in "${!SRC_FILES[@]}"; do
     # Run rsync for a remote destination
     if [ ! -z "${REMOTE_HOST}" ];
     then
-        rsync1 ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${REMOTE_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!" || echo -e "\r${reset}  \__${i}...ERROR!"
+        rsync ${RSYNC_ARGS} --exclude-from $exclude_list_tmp_filename ${SRC_ROOT_DIR}${i} ${REMOTE_DEST_DIR}"$i" && echo -e "\r${reset}  \__${i}...Done!" || echo -e "\r${reset}  \__${i}...ERROR!"
     fi
 
     # Remove temporary exclude list file
