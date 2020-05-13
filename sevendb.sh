@@ -60,7 +60,7 @@ if [[ $# -gt 0 ]]; then
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount sevendb..."
         fusermount3 -u $SEVENDB_MOUNT_POINT
-	rm -r $SEVENDB_MOUNT_POINT
+	      rm -r $SEVENDB_MOUNT_POINT
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount sevendb on $SEVENDB_MOUNT_POINT),"
@@ -69,12 +69,14 @@ if [[ $# -gt 0 ]]; then
     fi
 
 else
-    # No flag has been given -- print status
+    # No flag has been given -- print statuss
+    mkdir -p $SEVENDB_MOUNT_POINT
     mountpoint $SEVENDB_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
         echo "SevenDB is mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
     else
         echo "SevenDB is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
+        rm -r $SEVENDB_MOUNT_POINT
     fi
 fi

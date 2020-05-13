@@ -60,7 +60,7 @@ if [[ $# -gt 0 ]]; then
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount datasets..."
         fusermount3 -u $DATASETS_MOUNT_POINT
-	rm -r $DATASETS_MOUNT_POINT
+	      rm -r $DATASETS_MOUNT_POINT
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount datasets on $DATASETS_MOUNT_POINT),"
@@ -70,11 +70,13 @@ if [[ $# -gt 0 ]]; then
 
 else
     # No flag has been given -- print status
+    mkdir -p $DATASETS_MOUNT_POINT
     mountpoint $DATASETS_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
         echo "DATASETS is mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
     else
         echo "DATASETS is ${b}${red}not${reset}${n} mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
+        rm -r $DATASETS_MOUNT_POINT
     fi
 fi
