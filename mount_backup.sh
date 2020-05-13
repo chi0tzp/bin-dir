@@ -74,6 +74,7 @@ else
     status=$?
     if [[ $status -eq 0 ]]; then
         echo "BACKUP is mounted on ${b}${red}$BACKUP_MOUNT_POINT${reset}${n}"
+        lsof -w $BACKUP_MOUNT_POINT
     else
         echo "BACKUP is ${b}${red}not${reset}${n} mounted on ${b}${red}$BACKUP_MOUNT_POINT${reset}${n}"
     fi

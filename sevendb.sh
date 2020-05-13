@@ -74,6 +74,7 @@ else
     status=$?
     if [[ $status -eq 0 ]]; then
         echo "SevenDB is mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
+        lsof -w $SEVENDB_MOUNT_POINT
     else
         echo "SevenDB is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
     fi

@@ -75,6 +75,7 @@ else
     echo "status:$status"
     if [[ $status -eq 0 ]]; then
         echo "DATASETS is mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
+        lsof -w $DATASETS_MOUNT_POINT
     else
         echo "DATASETS is ${b}${red}not${reset}${n} mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
     fi
