@@ -70,13 +70,12 @@ if [[ $# -gt 0 ]]; then
 
 else
     # No flag has been given -- print status
-    mkdir -p $DATASETS_MOUNT_POINT
-    mountpoint $DATASETS_MOUNT_POINT >> /dev/null
+    mountpoint -q $DATASETS_MOUNT_POINT >> /dev/null
     status=$?
+    echo "status:$status"
     if [[ $status -eq 0 ]]; then
         echo "DATASETS is mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
     else
         echo "DATASETS is ${b}${red}not${reset}${n} mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
-        rm -r $DATASETS_MOUNT_POINT
     fi
 fi

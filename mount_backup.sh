@@ -70,13 +70,11 @@ if [[ $# -gt 0 ]]; then
 
 else
     # No flag has been given -- print status
-    mkdir -p $BACKUP_MOUNT_POINT
     mountpoint $BACKUP_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
         echo "BACKUP is mounted on ${b}${red}$BACKUP_MOUNT_POINT${reset}${n}"
     else
         echo "BACKUP is ${b}${red}not${reset}${n} mounted on ${b}${red}$BACKUP_MOUNT_POINT${reset}${n}"
-        rm -r $BACKUP_MOUNT_POINT
     fi
 fi

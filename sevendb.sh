@@ -70,13 +70,11 @@ if [[ $# -gt 0 ]]; then
 
 else
     # No flag has been given -- print statuss
-    mkdir -p $SEVENDB_MOUNT_POINT
-    mountpoint $SEVENDB_MOUNT_POINT >> /dev/null
+    mountpoint -q $SEVENDB_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
         echo "SevenDB is mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
     else
         echo "SevenDB is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT${reset}${n}"
-        rm -r $SEVENDB_MOUNT_POINT
     fi
 fi
