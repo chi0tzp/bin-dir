@@ -2,7 +2,7 @@
 ################################################################################
 ## datasets.sh <flag>                                                         ##
 ## A bash script for mounting/unmounting DATASETS remote directory (hosted on ##
-## rpi4) using sshfs / fusermount.                                            ##
+## pifs) using sshfs / fusermount.                                            ##
 ##                                                                            ##
 ## Usage: datasets.sh [options]                                               ##
 ## Options:                                                                   ##
@@ -30,17 +30,17 @@ help(){
 
 # Initialize variables
 OPTIND=1
-DATASETS_IP=192.168.0.28
-DATASETS_SSH_PORT=1312
+PIFS_IP=192.168.0.28
+PIFS_SSH_PORT=1312
 DATASETS_MOUNT_POINT=~/DATASETS/
 
 # Parse command line arguments
 while getopts ":r:p:m:" options
 do
     case $options in
-        r ) DATASETS_IP="$OPTARG"
+        r ) PIFS_IP="$OPTARG"
             ;;
-        p ) DATASETS_SSH_PORT="$OPTARG"
+        p ) PIFS_SSH_PORT="$OPTARG"
             ;;
         m ) DATASETS_MOUNT_POINT="$OPTARG"
             ;;
@@ -56,7 +56,7 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount datasets..."
         mkdir -p $DATASETS_MOUNT_POINT
-        sshfs -p 1312 -C chi@192.168.0.28:/home/datasets/ $DATASETS_MOUNT_POINT -o idmap=user
+        sshfs -p $PIFS_SSH_PORT -C chi@$PIFS_IP:/home/datasets/ $DATASETS_MOUNT_POINT -o idmap=user
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount datasets..."
         fusermount3 -u $DATASETS_MOUNT_POINT
@@ -72,7 +72,6 @@ else
     # No flag has been given -- print status
     mountpoint -q $DATASETS_MOUNT_POINT >> /dev/null
     status=$?
-    echo "status:$status"
     if [[ $status -eq 0 ]]; then
         echo "DATASETS is mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
         lsof -w $DATASETS_MOUNT_POINT
