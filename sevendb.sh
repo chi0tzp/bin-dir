@@ -2,7 +2,7 @@
 ################################################################################
 ## sevendb.sh <flag>                                                          ##
 ## A bash script for mounting/unmounting sevendb remote directory (hosted on  ##
-## rpi4) using sshfs / fusermount.                                            ##
+## pifs) using sshfs / fusermount.                                            ##
 ##                                                                            ##
 ## Usage: sevendb.sh [options]                                                ##
 ## Options:                                                                   ##
@@ -30,17 +30,17 @@ help(){
 
 # Initialize variables
 OPTIND=1
-SEVENDB_IP=192.168.0.28
-SEVENDB_SSH_PORT=1312
+PIFS_IP=192.168.0.28
+PIFS_SSH_PORT=1312
 SEVENDB_MOUNT_POINT=~/SevenDB/
 
 # Parse command line arguments
 while getopts ":r:p:m:" options
 do
     case $options in
-        r ) SEVENDB_IP="$OPTARG"
+        r ) PIFS_IP="$OPTARG"
             ;;
-        p ) SEVENDB_SSH_PORT="$OPTARG"
+        p ) PIFS_SSH_PORT="$OPTARG"
             ;;
         m ) SEVENDB_MOUNT_POINT="$OPTARG"
             ;;
@@ -56,7 +56,7 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount sevendb..."
         mkdir -p $SEVENDB_MOUNT_POINT
-        sshfs -p 1312 -C chi@192.168.0.28:/home/sevendb/ $SEVENDB_MOUNT_POINT -o idmap=user
+        sshfs -p $PIFS_SSH_PORT -C chi@$PIFS_IP:/home/sevendb/ $SEVENDB_MOUNT_POINT -o idmap=user
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount sevendb..."
         fusermount3 -u $SEVENDB_MOUNT_POINT
