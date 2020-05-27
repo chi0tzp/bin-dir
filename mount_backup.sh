@@ -2,7 +2,7 @@
 ################################################################################
 ## mount_backup.sh [options] <flag>                                           ##
 ## A bash script for mounting/unmounting BACKUP remote directory (hosted on   ##
-## rpi4) using sshfs / fusermount.                                            ##
+## pifs) using sshfs / fusermount.                                            ##
 ##                                                                            ##
 ## Usage: mount_backup.sh [options]                                           ##
 ## Options:                                                                   ##
@@ -30,17 +30,17 @@ help(){
 
 # Initialize variables
 OPTIND=1
-BACKUP_IP=192.168.0.28
-BACKUP_SSH_PORT=1312
+PIFS_IP=192.168.0.28
+PIFS_SSH_PORT=1312
 BACKUP_MOUNT_POINT=~/BACKUP/
 
 # Parse command line arguments
 while getopts ":r:p:m:" options
 do
     case $options in
-        r ) BACKUP_IP="$OPTARG"
+        r ) PIFS_IP="$OPTARG"
             ;;
-        p ) BACKUP_SSH_PORT="$OPTARG"
+        p ) PIFS_SSH_PORT="$OPTARG"
             ;;
         m ) BACKUP_MOUNT_POINT="$OPTARG"
             ;;
@@ -56,7 +56,7 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount backup..."
         mkdir -p $BACKUP_MOUNT_POINT
-        sshfs -p 1312 -C chi@192.168.0.28:/home/backup0/ $BACKUP_MOUNT_POINT -o idmap=user
+        sshfs -p $PIFS_SSH_PORT -C chi@$PIFS_IP:/home/backup0/ $BACKUP_MOUNT_POINT -o idmap=user
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount backup..."
         fusermount3 -u $BACKUP_MOUNT_POINT
