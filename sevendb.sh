@@ -1,13 +1,12 @@
 #!/bin/bash
 ################################################################################
 ## sevendb.sh <flag>                                                          ##
-## A bash script for mounting/unmounting sevendb remote directory (hosted on  ##
+## A bash script for mounting/unmounting SevenDB remote directory (hosted on  ##
 ## pifs) using sshfs / fusermount.                                            ##
 ##                                                                            ##
 ## Usage: sevendb.sh [options]                                                ##
 ## Options:                                                                   ##
 ##    -r <remote>          : set the remote that hosts SevenDB                ##
-##    -p <remote_ssh_port> : set ssh port used for accessing remote           ##
 ##    -m <mount_point>     : set directory where remote sevendb will be       ##
 ##                           mounted on                                       ##
 ##    <flag>               : set either to "on", for mounting remote sevendb  ##
@@ -25,22 +24,19 @@ reset=`tput sgr0`
 
 # Help function
 help(){
-    echo "${b}Usage:${n} sevendb.sh [-r <remote>] [-p <remote_ssh_port>] [-m <mount_point>] <flag>" 1>&2; exit 1;
+    echo "${b}Usage:${n} sevendb.sh [-r <remote>] [-m <mount_point>] <flag>" 1>&2; exit 1;
 }
 
 # Initialize variables
 OPTIND=1
-PIFS_IP=192.168.0.28
-PIFS_SSH_PORT=1312
+PIFS=pifs
 SEVENDB_MOUNT_POINT=~/SevenDB/
 
 # Parse command line arguments
-while getopts ":r:p:m:" options
+while getopts ":r:m:" options
 do
     case $options in
-        r ) PIFS_IP="$OPTARG"
-            ;;
-        p ) PIFS_SSH_PORT="$OPTARG"
+        r ) PIFS="$OPTARG"
             ;;
         m ) SEVENDB_MOUNT_POINT="$OPTARG"
             ;;
@@ -56,7 +52,8 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount sevendb..."
         mkdir -p $SEVENDB_MOUNT_POINT
-        sshfs -p $PIFS_SSH_PORT -C chi@$PIFS_IP:/home/sevendb/ $SEVENDB_MOUNT_POINT -o idmap=user
+        sshfs ${PIFS}:/home/sevendb/ $SEVENDB_MOUNT_POINT -o idmap=user
+
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount sevendb..."
         fusermount3 -u $SEVENDB_MOUNT_POINT
