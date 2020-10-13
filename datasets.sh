@@ -1,16 +1,15 @@
 #!/bin/bash
 ################################################################################
 ## datasets.sh <flag>                                                         ##
-## A bash script for mounting/unmounting DATASETS remote directory (hosted on ##
+## A bash script for mounting/unmounting datasets remote directory (hosted on ##
 ## pifs) using sshfs / fusermount.                                            ##
 ##                                                                            ##
 ## Usage: datasets.sh [options]                                               ##
 ## Options:                                                                   ##
-##    -r <remote>          : set the remote that hosts DATASETS               ##
-##    -p <remote_ssh_port> : set ssh port used for accessing remote           ##
-##    -m <mount_point>     : set directory where remote DATASETS will be      ##
+##    -r <remote>          : set the remote that hosts datasets               ##
+##    -m <mount_point>     : set directory where remote datasets will be      ##
 ##                           mounted on                                       ##
-##    <flag>               : set either to "on", for mounting remote DATASETS ##
+##    <flag>               : set either to "on", for mounting remote datasets ##
 ##                           direcotry using sshff, "off" for unmounting it   ##
 ##                           using fusermount, or leave it empty for getting  ##
 ##                           the status of mount point                        ##
@@ -25,22 +24,19 @@ reset=`tput sgr0`
 
 # Help function
 help(){
-    echo "${b}Usage:${n} datasets.sh [-r <remote>] [-p <remote_ssh_port>] [-m <mount_point>] <flag>" 1>&2; exit 1;
+    echo "${b}Usage:${n} datasets.sh [-r <remote>] [-m <mount_point>] <flag>" 1>&2; exit 1;
 }
 
 # Initialize variables
 OPTIND=1
-PIFS_IP=192.168.0.28
-PIFS_SSH_PORT=1312
-DATASETS_MOUNT_POINT=~/DATASETS/
+PIFS=pifs
+DATASETS_MOUNT_POINT=~/Datasets/
 
 # Parse command line arguments
-while getopts ":r:p:m:" options
+while getopts ":r:m:" options
 do
     case $options in
-        r ) PIFS_IP="$OPTARG"
-            ;;
-        p ) PIFS_SSH_PORT="$OPTARG"
+        r ) PIFS="$OPTARG"
             ;;
         m ) DATASETS_MOUNT_POINT="$OPTARG"
             ;;
@@ -56,7 +52,8 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount datasets..."
         mkdir -p $DATASETS_MOUNT_POINT
-        sshfs -p $PIFS_SSH_PORT -C chi@$PIFS_IP:/home/datasets/ $DATASETS_MOUNT_POINT -o idmap=user
+        sshfs ${PIFS}:/home/datasets/ $DATASETS_MOUNT_POINT -o idmap=user
+
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount datasets..."
         fusermount3 -u $DATASETS_MOUNT_POINT
@@ -69,13 +66,13 @@ if [[ $# -gt 0 ]]; then
     fi
 
 else
-    # No flag has been given -- print status
+    # No flag has been given -- print statuss
     mountpoint -q $DATASETS_MOUNT_POINT >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
-        echo "DATASETS is mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
+        echo "Datasets are mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
         lsof -w $DATASETS_MOUNT_POINT
     else
-        echo "DATASETS is ${b}${red}not${reset}${n} mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
+        echo "Datasets are ${b}${red}not${reset}${n} mounted on ${b}${red}$DATASETS_MOUNT_POINT${reset}${n}"
     fi
 fi
