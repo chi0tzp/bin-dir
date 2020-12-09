@@ -63,3 +63,7 @@ if [ -z "${LOCAL_PORT}" ]; then
 fi
 
 ((exit_with_help)) && help || :
+
+echo "Redirect traffic from ${SSH_SERVER}:${REMOTE_PORT} to http://localhost:${LOCAL_PORT}"
+
+ssh andromeda -L 6006:localhost:6006 -N
