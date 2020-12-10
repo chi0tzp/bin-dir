@@ -66,4 +66,6 @@ fi
 
 echo "Redirect traffic from ${SSH_SERVER}:${REMOTE_PORT} to http://localhost:${LOCAL_PORT}"
 
-ssh andromeda -L 6006:localhost:6006 -N
+tmux_session="redirect"
+echo "Start tmux session: ${tmux_session}"
+tmux new-session -d -s ${tmux_session} "ssh andromeda -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} -N"
