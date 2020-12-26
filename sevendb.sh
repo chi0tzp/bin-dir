@@ -52,7 +52,7 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount sevendb..."
         mkdir -p $SEVENDB_MOUNT_POINT
-        sshfs ${PIFS}:/home/sevendb/ $SEVENDB_MOUNT_POINT -o idmap=user
+        sshfs -o idmap=user ${PIFS}:/home/sevendb/ $SEVENDB_MOUNT_POINT
 
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount sevendb..."
