@@ -57,7 +57,6 @@ if [[ $# -gt 0 ]]; then
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount Series..."
         fusermount3 -u $SERIES_MOUNT_POINT
-	    rm -r $SERIES_MOUNT_POINT
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount Series on $SERIES_MOUNT_POINT),"
