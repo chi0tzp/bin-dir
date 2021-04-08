@@ -63,8 +63,6 @@ if [[ $# -gt 0 ]]; then
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS001
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS002
         fusermount3 -u $SEVENDB_MOUNT_POINT/SERIES
-        rm -r $SEVENDB_MOUNT_POINT
-
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount SEVENDB on $SEVENDB_MOUNT_POINT),"
