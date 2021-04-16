@@ -52,11 +52,11 @@ if [[ $# -gt 0 ]]; then
         echo "Mount SEVENDB..."
         mkdir -p $SEVENDB_MOUNT_POINT
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS001
-        sshfs -o idmap=user pifs:/home/sevendb/FILMS001 $SEVENDB_MOUNT_POINT/FILMS001
+        sshfs -o idmap=user pifs:/home/films1/FILMS001 $SEVENDB_MOUNT_POINT/FILMS001
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS002
-        sshfs -o idmap=user pifs:/home/sevendb-plus/FILMS002 $SEVENDB_MOUNT_POINT/FILMS002
+        sshfs -o idmap=user pifs:/home/films2/FILMS002 $SEVENDB_MOUNT_POINT/FILMS002
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS003
-        sshfs -o idmap=user pifs:/home/tmpfilms3/FILMS003 $SEVENDB_MOUNT_POINT/FILMS003
+        sshfs -o idmap=user pifs:/home/films3/FILMS003 $SEVENDB_MOUNT_POINT/FILMS003
 
 
         # mkdir -p $SEVENDB_MOUNT_POINT/SERIES
