@@ -5,8 +5,9 @@
 ## directories (hosted on pifs) using sshfs / fusermount:                     ##
 ##  -- pifs:/home/sevendb/FILMS001                                            ##
 ##  -- pifs:/home/sevendb-plus/FILMS002                                       ##
+##  --+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ##
 ##                                                                            ##
-## Usage: se7endb.sh [options]                                                ##
+## Usage: se7endb [options]                                                   ##
 ## Options:                                                                   ##
 ##    -r <remote>          : set the remote that hosts SevenDB                ##
 ##    -m <mount_point>     : set directory where remote sevendb will be       ##
@@ -59,6 +60,8 @@ if [[ $# -gt 0 ]]; then
         sshfs -o idmap=user pifs:/home/films3/FILMS003 $SEVENDB_MOUNT_POINT/FILMS003
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS004
         sshfs -o idmap=user pifs:/home/films4/FILMS004 $SEVENDB_MOUNT_POINT/FILMS004
+	mkdir -p $SEVENDB_MOUNT_POINT/FILMS005
+        sshfs -o idmap=user pifs:/home/films5/FILMS005 $SEVENDB_MOUNT_POINT/FILMS005
 	mkdir -p $SEVENDB_MOUNT_POINT/SERIES
         sshfs -o idmap=user pifs:/home/series/Series $SEVENDB_MOUNT_POINT/SERIES
 
@@ -68,6 +71,7 @@ if [[ $# -gt 0 ]]; then
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS002
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS003
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS004
+	fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS005
 	fusermount3 -u $SEVENDB_MOUNT_POINT/SERIES
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
@@ -113,6 +117,15 @@ else
         lsof -w $SEVENDB_MOUNT_POINT/FILMS004
     else
         echo "SEVENDB/FILMS004 is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT/FILMS004${reset}${n}"
+    fi
+    # --- FILMS005 ---
+    mountpoint -q $SEVENDB_MOUNT_POINT/FILMS005 >> /dev/null
+    status=$?
+    if [[ $status -eq 0 ]]; then
+        echo "SEVENDB/FILMS005 is mounted on ${b}${red}$SEVENDB_MOUNT_POINT/FILMS005${reset}${n}"
+        lsof -w $SEVENDB_MOUNT_POINT/FILMS005
+    else
+        echo "SEVENDB/FILMS005 is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT/FILMS005${reset}${n}"
     fi
     # --- SERIES ---
     mountpoint -q $SEVENDB_MOUNT_POINT/SERIES >> /dev/null
