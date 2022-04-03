@@ -60,10 +60,12 @@ if [[ $# -gt 0 ]]; then
         sshfs -o idmap=user pifs:/home/sevendb/films3/FILMS003 $SEVENDB_MOUNT_POINT/FILMS003
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS004
         sshfs -o idmap=user pifs:/home/sevendb/films4/FILMS004 $SEVENDB_MOUNT_POINT/FILMS004
-	mkdir -p $SEVENDB_MOUNT_POINT/FILMS005
+        mkdir -p $SEVENDB_MOUNT_POINT/FILMS005
         sshfs -o idmap=user pifs:/home/sevendb/films5/FILMS005 $SEVENDB_MOUNT_POINT/FILMS005
-	mkdir -p $SEVENDB_MOUNT_POINT/SERIES
-        sshfs -o idmap=user pifs:/home/sevendb/series/Series $SEVENDB_MOUNT_POINT/SERIES
+        mkdir -p $SEVENDB_MOUNT_POINT/FILMS006
+        sshfs -o idmap=user pifs:/home/sevendb/films6/FILMS006 $SEVENDB_MOUNT_POINT/FILMS006
+        # mkdir -p $SEVENDB_MOUNT_POINT/SERIES
+        # sshfs -o idmap=user pifs:/home/sevendb/series/Series $SEVENDB_MOUNT_POINT/SERIES
 
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount SEVENDB..."
@@ -71,8 +73,9 @@ if [[ $# -gt 0 ]]; then
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS002
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS003
         fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS004
-	fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS005
-	fusermount3 -u $SEVENDB_MOUNT_POINT/SERIES
+        fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS005
+        fusermount3 -u $SEVENDB_MOUNT_POINT/FILMS006
+        # fusermount3 -u $SEVENDB_MOUNT_POINT/SERIES
     else
         echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
         echo " -- ${b}${red}on${reset}${n} (to mount SEVENDB on $SEVENDB_MOUNT_POINT),"
@@ -127,13 +130,23 @@ else
     else
         echo "SEVENDB/FILMS005 is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT/FILMS005${reset}${n}"
     fi
-    # --- SERIES ---
-    mountpoint -q $SEVENDB_MOUNT_POINT/SERIES >> /dev/null
+    # --- FILMS006 ---
+    mountpoint -q $SEVENDB_MOUNT_POINT/FILMS006 >> /dev/null
     status=$?
     if [[ $status -eq 0 ]]; then
-        echo "SEVENDB/SERIES is mounted on ${b}${red}$SEVENDB_MOUNT_POINT/SERIES${reset}${n}"
-        lsof -w $SEVENDB_MOUNT_POINT/SERIES
+        echo "SEVENDB/FILMS006 is mounted on ${b}${red}$SEVENDB_MOUNT_POINT/FILMS006${reset}${n}"
+        lsof -w $SEVENDB_MOUNT_POINT/FILMS006
     else
-        echo "SEVENDB/SERIES is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT/SERIES${reset}${n}"
+        echo "SEVENDB/FILMS006 is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT/FILMS006${reset}${n}"
     fi
+
+    # --- SERIES ---
+    #mountpoint -q $SEVENDB_MOUNT_POINT/SERIES >> /dev/null
+    #status=$?
+    #if [[ $status -eq 0 ]]; then
+    #    echo "SEVENDB/SERIES is mounted on ${b}${red}$SEVENDB_MOUNT_POINT/SERIES${reset}${n}"
+    #    lsof -w $SEVENDB_MOUNT_POINT/SERIES
+    #else
+    #    echo "SEVENDB/SERIES is ${b}${red}not${reset}${n} mounted on ${b}${red}$SEVENDB_MOUNT_POINT/SERIES${reset}${n}"
+    #fi
 fi
