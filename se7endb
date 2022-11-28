@@ -2,9 +2,9 @@
 ################################################################################
 ## se7endb.sh <flag>                                                          ##
 ## A bash script for mounting/unmounting the following SevenDB remote         ##
-## directories (hosted on pifs) using sshfs / fusermount:                     ##
-##  -- pifs:/home/sevendb/FILMS001                                            ##
-##  -- pifs:/home/sevendb-plus/FILMS002                                       ##
+## directories (hosted on pi7db) using sshfs / fusermount:                    ##
+##  -- pi7db:/home/sevendb/FILMS001                                           ##
+##  -- pi7db:/home/sevendb-plus/FILMS002                                      ##
 ##  --+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ##
 ##                                                                            ##
 ## Usage: se7endb [options]                                                   ##
@@ -53,19 +53,19 @@ if [[ $# -gt 0 ]]; then
         echo "Mount SEVENDB..."
         mkdir -p $SEVENDB_MOUNT_POINT
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS001
-        sshfs -o idmap=user pifs:/home/sevendb/films1/FILMS001 $SEVENDB_MOUNT_POINT/FILMS001
+        sshfs -o idmap=user pi7db:/home/sevendb/films1/FILMS001 $SEVENDB_MOUNT_POINT/FILMS001
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS002
-        sshfs -o idmap=user pifs:/home/sevendb/films2/FILMS002 $SEVENDB_MOUNT_POINT/FILMS002
+        sshfs -o idmap=user pi7db:/home/sevendb/films2/FILMS002 $SEVENDB_MOUNT_POINT/FILMS002
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS003
-        sshfs -o idmap=user pifs:/home/sevendb/films3/FILMS003 $SEVENDB_MOUNT_POINT/FILMS003
+        sshfs -o idmap=user pi7db:/home/sevendb/films3/FILMS003 $SEVENDB_MOUNT_POINT/FILMS003
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS004
-        sshfs -o idmap=user pifs:/home/sevendb/films4/FILMS004 $SEVENDB_MOUNT_POINT/FILMS004
+        sshfs -o idmap=user pi7db:/home/sevendb/films4/FILMS004 $SEVENDB_MOUNT_POINT/FILMS004
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS005
-        sshfs -o idmap=user pifs:/home/sevendb/films5/FILMS005 $SEVENDB_MOUNT_POINT/FILMS005
+        sshfs -o idmap=user pi7db:/home/sevendb/films5/FILMS005 $SEVENDB_MOUNT_POINT/FILMS005
         mkdir -p $SEVENDB_MOUNT_POINT/FILMS006
-        sshfs -o idmap=user pifs:/home/sevendb/films6/FILMS006 $SEVENDB_MOUNT_POINT/FILMS006
+        sshfs -o idmap=user pi7db:/home/sevendb/films6/FILMS006 $SEVENDB_MOUNT_POINT/FILMS006
         # mkdir -p $SEVENDB_MOUNT_POINT/SERIES
-        # sshfs -o idmap=user pifs:/home/sevendb/series/Series $SEVENDB_MOUNT_POINT/SERIES
+        # sshfs -o idmap=user pi7db:/home/sevendb/series/Series $SEVENDB_MOUNT_POINT/SERIES
 
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount SEVENDB..."
