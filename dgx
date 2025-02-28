@@ -1,0 +1,60 @@
+#!/bin/bash
+
+b=$(tput bold)
+n=$(tput sgr0)
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
+
+# Help function
+help(){
+    echo "${b}Usage:${n} dgx [-m <mount_point>] <flag>" 1>&2; exit 1;
+}
+
+# Initialize variables
+OPTIND=1
+DGX_MOUNT_POINT=~/DGX
+
+
+# Parse command line arguments
+while getopts ":m:" options
+do
+    case $options in
+        m ) DGX_MOUNT_POINT="$OPTARG"
+            ;;
+        * ) help
+            ;;
+    esac
+done
+shift $(expr $OPTIND - 1 )
+
+if [[ $# -gt 0 ]]; then
+    # A flag has been given
+    flag=$1
+    if [[ "${flag}" == "on" ]]; then
+        echo "Mount DGX..."
+        mkdir -p $DGX_MOUNT_POINT
+        sshfs -o idmap=user dgx:/home/nfs/c.tzelepis/transit/ $DGX_MOUNT_POINT/
+
+    elif [[ "${flag}" == "off" ]]; then
+        echo "Unmount SEVENDB..."
+        fusermount3 -u $DGX_MOUNT_POINT/
+
+    else
+        echo "${b}${red}[Invalid flag]${reset}${n} Choose:"
+        echo " -- ${b}${red}on${reset}${n} (to mount DGX on $DGX_MOUNT_POINT),"
+        echo " -- ${b}${red}off${reset}${n} (to unmount DGX from $DGX_MOUNT_POINT), or "
+        echo " -- leave it ${b}${red}empty${reset}${n} for getting current status"
+    fi
+
+else
+    # No flag has been given -- print status
+    mountpoint -q $DGX_MOUNT_POINT >> /dev/null
+    status=$?
+    if [[ $status -eq 0 ]]; then
+        echo "DGX is mounted on ${b}${red}$DGX_MOUNT_POINT${reset}${n}"
+        lsof -w $DGX_MOUNT_POINT
+    else
+        echo "DGX is ${b}${red}not${reset}${n} mounted on ${b}${red}$DGX_MOUNT_POINT${reset}${n}"
+    fi
+fi

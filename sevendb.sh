@@ -2,7 +2,7 @@
 ################################################################################
 ## sevendb.sh <flag>                                                          ##
 ## A bash script for mounting/unmounting SevenDB remote directory (hosted on  ##
-## pifs) using sshfs / fusermount.                                            ##
+## sdb) using sshfs / fusermount.                                             ##
 ##                                                                            ##
 ## Usage: sevendb.sh [options]                                                ##
 ## Options:                                                                   ##
@@ -27,16 +27,18 @@ help(){
     echo "${b}Usage:${n} sevendb.sh [-r <remote>] [-m <mount_point>] <flag>" 1>&2; exit 1;
 }
 
+echo "test"
+
 # Initialize variables
 OPTIND=1
-PIFS=pifs
+SDB=sdb
 SEVENDB_MOUNT_POINT=~/SevenDB/
 
 # Parse command line arguments
 while getopts ":r:m:" options
 do
     case $options in
-        r ) PIFS="$OPTARG"
+        r ) SDB="$OPTARG"
             ;;
         m ) SEVENDB_MOUNT_POINT="$OPTARG"
             ;;
@@ -52,7 +54,7 @@ if [[ $# -gt 0 ]]; then
     if [[ "${flag}" == "on" ]]; then
         echo "Mount sevendb..."
         mkdir -p $SEVENDB_MOUNT_POINT
-        sshfs -o idmap=user ${PIFS}:/home/sevendb/ $SEVENDB_MOUNT_POINT
+        sshfs -o idmap=user ${SDB}:/home/sevendb/films/ $SEVENDB_MOUNT_POINT
 
     elif [[ "${flag}" == "off" ]]; then
         echo "Unmount sevendb..."
